@@ -21,6 +21,18 @@ app.get("/", (req, res) => {
 });
 
 
+app.get("/all", (req, res) => {
+  db.scrapedData.find({}, (error, found) => {
+    if (error) {
+      console.log(error);
+    }
+    else {
+      res.json(found);
+    }
+  })
+});
+
+
 app.get("/scrape", (req, res) => {
   request(scrapeURL, (error, response, html) => {
     const $ = cheerio.load(html);
