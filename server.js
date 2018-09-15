@@ -27,9 +27,20 @@ app.get("/all", (req, res) => {
       console.log(error);
     }
     else {
-      res.json(found);
+      let pageContent = "<h1>Articles</h1>";
+
+      found.forEach((entry) => {
+        pageContent += `<div>
+        <h3>${entry.headline}</h3>
+        <p>${entry.abstract}</p>
+        <a href="${entry.link}">${entry.link}</a>
+        </div>
+        <br>`;
+      });
+
+      res.send(pageContent);
     }
-  })
+  });
 });
 
 
