@@ -33,18 +33,15 @@ app.get("/all", (req, res) => {
 });
 
 
-app.get("/scrape", (req, res) => {
-  request(scrapeURL, (error, response, html) => {
-    const $ = cheerio.load(html);
+const addArticle = (headline, abstract, link) => {
+  db.scrapedData.find({ "headline": headline }, (error, found) => {
+    if (error) {
+      console.log(error);
+    }
+    else {
+      const count = found.length;
 
-    $("div .story__body").each((i, element) => {
-      // console.log(element);
-      const headline = $(element).find(".story__headline").text();
-      const abstract = $(element).find(".story__abstract").text();
-      const link = scrapeURL + $(element).find("a").attr("href");
-
-      // skip any items that are missing a headline or abstract
-      if (headline && abstract) {
+      if (count === 0) {
         db.scrapedData.insert({
           headline: headline,
           abstract: abstract,
@@ -59,10 +56,28 @@ app.get("/scrape", (req, res) => {
             }
           });
       }
+    }
+  });
+}
+
+
+app.get("/scrape", (req, res) => {
+  request(scrapeURL, (error, response, html) => {
+    const $ = cheerio.load(html);
+
+    $("div .story__body").each((i, element) => {
+      const headline = $(element).find(".story__headline").text();
+      const abstract = $(element).find(".story__abstract").text();
+      const link = scrapeURL + $(element).find("a").attr("href");
+
+      // skip any items that are missing a headline or abstract
+      if (headline && abstract) {
+        addArticle(headline, abstract, link);
+      }
     });
   });
 
-  res.end();
+  res.send("Scrape complete.");
 });
 
 
