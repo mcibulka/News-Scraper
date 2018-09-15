@@ -29,14 +29,21 @@ app.get("/all", (req, res) => {
     else {
       let pageContent = "<h1>Articles</h1>";
 
-      found.forEach((entry) => {
-        pageContent += `<div>
-        <h3>${entry.headline}</h3>
-        <p>${entry.abstract}</p>
-        <a href="${entry.link}">${entry.link}</a>
-        </div>
-        <br>`;
-      });
+      if (found.length === 0) {
+        pageContent += "No articles found.  Go to /scrape and try again.";
+      }
+      else {
+        pageContent += `<h2>Total Articles: ${found.length}</h2>`;
+        
+        found.forEach((entry) => {
+          pageContent += `<div>
+          <h3>${entry.headline}</h3>
+          <p>${entry.abstract}</p>
+          <a href="${entry.link}">${entry.link}</a>
+          </div>
+          <br>`;
+        });
+      }
 
       res.send(pageContent);
     }
